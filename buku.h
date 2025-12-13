@@ -51,4 +51,18 @@ struct BukuList {
 void initList(PenulisList &L);
 void initList(BukuList &L);
 void insertFirstPenulis(PenulisList &L, int id, string nama, int umur);
+
 void insertLastBuku(BukuList &L, int id, string judul, int tahun);
+PenulisNode* findPenulis(PenulisList L, int id);
+BukuNode* findBuku(BukuList L, int id);
+
+void connect(PenulisList &LP, BukuList &LB, int idPenulis, int idBuku);
+
+void deleteBukuAndRelasi(BukuList &LB, PenulisList &LP, int idBuku);
+void deletePenulisAndRelasi(PenulisList &LP, BukuList &LB, int idPenulis);
+
+void displayAllBukuWithPenulis(BukuList LB);
+void displayBukuByPenulis(PenulisList LP, int idPenulis);
+void displayPenulisByBuku(BukuList LB, int idBuku);
+
+void displayMostActivePenulis(PenulisList LP);
