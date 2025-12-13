@@ -66,3 +66,5 @@ void displayBukuByPenulis(PenulisList LP, int idPenulis);
 void displayPenulisByBuku(BukuList LB, int idBuku);
 
 void displayMostActivePenulis(PenulisList LP);
+
+#endif
