@@ -195,3 +195,36 @@ void deletePenulisAndRelasi(PenulisList &LP, BukuList &LB, int idPenulis) {
     cout << "Penulis '" << namaPenulis << "' (ID: " << idPenulis << ") beserta semua relasinya berhasil dihapus.\n";
 }
 
+void displayAllBukuWithPenulis(BukuList LB) {
+    cout << "\n--- Data Keseluruhan Buku Beserta Penulisnya ---\n";
+    if (LB.first == nullptr) {
+        cout << "Tidak ada data buku.\n";
+        return;
+    }
+
+    BukuNode* currentBuku = LB.first;
+    while (currentBuku != nullptr) {
+        cout << "------------------------------------------\n";
+        cout << "Buku ID : " << currentBuku->idBuku << "\n";
+        cout << "Judul   : " << currentBuku->judul << "\n";
+        cout << "Tahun   : " << currentBuku->tahunTerbit << "\n";
+        cout << "Penulis : ";
+
+        RelasiNode* currentRelasi = currentBuku->firstRelasi;
+        if (currentRelasi == nullptr) {
+            cout << "(Tidak ada penulis terhubung)\n";
+        } else {
+            int count = 0;
+            while (currentRelasi != nullptr) {
+                if (count > 0) cout << ", ";
+                cout << currentRelasi->nextPenulis->nama;
+                currentRelasi = currentRelasi->nextRelasiBuku; 
+                count++;
+            }
+            cout << "\n";
+        }
+        currentBuku = currentBuku->next;
+    }
+    cout << "------------------------------------------\n";
+
+}
