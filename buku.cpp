@@ -144,3 +144,54 @@ void deleteBukuAndRelasi(BukuList &LB, PenulisList &LP, int idBuku) {
     cout << "Buku '" << judulBuku << "' (ID: " << idBuku << ") beserta semua relasinya berhasil dihapus.\n";
 }
 
+void deletePenulisAndRelasi(PenulisList &LP, BukuList &LB, int idPenulis) {
+    PenulisNode* penulisToDelete = findPenulis(LP, idPenulis);
+    if (!penulisToDelete) {
+        cout << "Penulis dengan ID " << idPenulis << " tidak ditemukan.\n";
+        return;
+    }
+    
+    string namaPenulis = penulisToDelete->nama;
+    
+    RelasiNode* currentRelasi = penulisToDelete->firstRelasi;
+    while (currentRelasi != nullptr) {
+        RelasiNode* relasiNext = currentRelasi->nextRelasiPenulis; 
+        BukuNode* bukuTerkait = currentRelasi->nextBuku;
+        
+        RelasiNode* relasiBuku = bukuTerkait->firstRelasi;
+        if (relasiBuku == currentRelasi) {
+            bukuTerkait->firstRelasi = currentRelasi->nextRelasiBuku;
+        } else {
+            RelasiNode* prevRelasiBuku = bukuTerkait->firstRelasi;
+            while (prevRelasiBuku != nullptr && prevRelasiBuku->nextRelasiBuku != currentRelasi) {
+                prevRelasiBuku = prevRelasiBuku->nextRelasiBuku;
+            }
+            if (prevRelasiBuku != nullptr) {
+                prevRelasiBuku->nextRelasiBuku = currentRelasi->nextRelasiBuku;
+            }
+        }
+        
+        delete currentRelasi;
+        currentRelasi = relasiNext;
+    }
+    penulisToDelete->firstRelasi = nullptr;
+
+    if (penulisToDelete == LP.first) {
+        LP.first = penulisToDelete->next;
+        if (LP.last == penulisToDelete) LP.last = nullptr;
+    } else {
+        PenulisNode* prevPenulis = LP.first;
+        while (prevPenulis != nullptr && prevPenulis->next != penulisToDelete) {
+            prevPenulis = prevPenulis->next;
+        }
+        
+        if (prevPenulis != nullptr) {
+            prevPenulis->next = penulisToDelete->next;
+            if (LP.last == penulisToDelete) LP.last = prevPenulis;
+        }
+    }
+    
+    delete penulisToDelete;
+    cout << "Penulis '" << namaPenulis << "' (ID: " << idPenulis << ") beserta semua relasinya berhasil dihapus.\n";
+}
+
