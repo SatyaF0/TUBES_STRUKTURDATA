@@ -92,7 +92,7 @@ void connect(PenulisList &LP, BukuList &LB, int idPenulis, int idBuku) {
     newRelasi->nextRelasiBuku = buku->firstRelasi;
     buku->firstRelasi = newRelasi;
     
-    cout << "Relasi berhasil dibuat: " << penulis->nama << " menulis " << buku->judul << ".\n";
+    cout << "Relasi berhasil dibuat: " << penulis->nama << " menulis " << buku->judul << ".\n";
 }
 void deleteBukuAndRelasi(BukuList &LB, PenulisList &LP, int idBuku) {
     BukuNode* bukuToDelete = findBuku(LB, idBuku);
@@ -228,3 +228,5 @@ void displayAllBukuWithPenulis(BukuList LB) {
     cout << "------------------------------------------\n";
 
 }
+
+// kurang 2 fungsi
