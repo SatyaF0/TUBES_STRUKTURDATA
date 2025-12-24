@@ -6,9 +6,9 @@
 
 using namespace std;
 
-
 struct PenulisNode;
 struct BukuNode;
+
 struct RelasiNode {
     PenulisNode* nextPenulis; 
     BukuNode* nextBuku;      
@@ -17,26 +17,21 @@ struct RelasiNode {
 };
 
 struct BukuNode {
-    int idBuku;
+    string idBuku; 
     string judul;
     int tahunTerbit; 
-    
     BukuNode* prev; 
     BukuNode* next;
-    
     RelasiNode* firstRelasi; 
 };
 
 struct PenulisNode {
-    int idPenulis;
+    string idPenulis; 
     string nama;
     int umur;
-    
     PenulisNode* next; 
-    
     RelasiNode* firstRelasi; 
 };
-
 
 struct PenulisList {
     PenulisNode* first;
@@ -50,21 +45,22 @@ struct BukuList {
 
 void initList(PenulisList &L);
 void initList(BukuList &L);
-void insertFirstPenulis(PenulisList &L, int id, string nama, int umur);
+void insertFirstPenulis(PenulisList &L, string id, string nama, int umur);
+void insertLastBuku(BukuList &L, string id, string judul, int tahun);
 
-void insertLastBuku(BukuList &L, int id, string judul, int tahun);
-PenulisNode* findPenulis(PenulisList L, int id);
-BukuNode* findBuku(BukuList L, int id);
+PenulisNode* findPenulis(PenulisList L, string id);
+BukuNode* findBuku(BukuList L, string id);
 
-void connect(PenulisList &LP, BukuList &LB, int idPenulis, int idBuku);
+void connect(PenulisList &LP, BukuList &LB, string idPenulis, string idBuku);
 
-void deleteBukuAndRelasi(BukuList &LB, PenulisList &LP, int idBuku);
-void deletePenulisAndRelasi(PenulisList &LP, BukuList &LB, int idPenulis);
+void deleteBukuAndRelasi(BukuList &LB, PenulisList &LP, string idBuku);
+void deletePenulisAndRelasi(PenulisList &LP, BukuList &LB, string idPenulis);
 
 void displayAllBukuWithPenulis(BukuList LB);
-void displayBukuByPenulis(PenulisList LP, int idPenulis);
-void displayPenulisByBuku(BukuList LB, int idBuku);
-void displayMostActivePenulis(PenulisList LP);
+void displayBukuByPenulis(PenulisList LP, string idPenulis);
+void displayPenulisByBuku(BukuList LB, string idBuku);
+
+void displayMostActivePenulis(PenulisList LP);
+void displayLeastActivePenulis(PenulisList LP); 
 
 #endif
-
