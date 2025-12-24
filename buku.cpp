@@ -229,4 +229,86 @@ void displayAllBukuWithPenulis(BukuList LB) {
 
 }
 
-// kurang 2 fungsi
+void displayBukuByPenulis(PenulisList LP, int idPenulis) {
+    PenulisNode* penulis = findPenulis(LP, idPenulis);
+    if (!penulis) {
+        cout << "Error: Penulis dengan ID " << idPenulis << " tidak ditemukan.\n";
+        return;
+    }
+
+    cout << "\n--- Buku yang Ditulis oleh " << penulis->nama << " ---\n";
+    RelasiNode* currentRelasi = penulis->firstRelasi;
+    if (currentRelasi == nullptr) {
+        cout << penulis->nama << " belum terhubung dengan buku mana pun.\n";
+    } else {
+        while (currentRelasi != nullptr) {
+            BukuNode* buku = currentRelasi->nextBuku;
+            cout << "ID: " << buku->idBuku << ", Judul: " << buku->judul << ", Tahun: " << buku->tahunTerbit << "\n";
+            currentRelasi = currentRelasi->nextRelasiPenulis; 
+        }
+    }
+}
+
+void displayPenulisByBuku(BukuList LB, int idBuku) {
+    BukuNode* buku = findBuku(LB, idBuku);
+    if (!buku) {
+        cout << "Error: Buku dengan ID " << idBuku << " tidak ditemukan.\n";
+        return;
+    }
+
+    cout << "\n--- Penulis Buku " << buku->judul << " ---\n";
+    RelasiNode* currentRelasi = buku->firstRelasi;
+    if (currentRelasi == nullptr) {
+        cout << "Buku ini belum terhubung dengan penulis mana pun.\n";
+    } else {
+        while (currentRelasi != nullptr) {
+            PenulisNode* penulis = currentRelasi->nextPenulis;
+            cout << "ID: " << penulis->idPenulis << ", Nama: " << penulis->nama << ", Umur: " << penulis->umur << "\n";
+            currentRelasi = currentRelasi->nextRelasiBuku; 
+        }
+    }
+}
+
+void displayMostActivePenulis(PenulisList LP) {
+    if (LP.first == nullptr) {
+        cout << "\nTidak ada data penulis.\n";
+        return;
+    }
+
+    PenulisNode* currentPenulis = LP.first;
+    int maxBuku = -1;
+    string mostActiveNama = "";
+    bool firstActive = true;
+
+    while (currentPenulis != nullptr) {
+        int countBuku = 0;
+        RelasiNode* currentRelasi = currentPenulis->firstRelasi;
+        while (currentRelasi != nullptr) {
+            countBuku++;
+            currentRelasi = currentRelasi->nextRelasiPenulis;
+        }
+
+        if (countBuku > maxBuku) {
+            maxBuku = countBuku;
+            mostActiveNama = currentPenulis->nama;
+            firstActive = true;
+        } else if (countBuku == maxBuku && maxBuku > 0) {
+            if (!firstActive) {
+                mostActiveNama += " dan ";
+            } else {
+                 mostActiveNama += ", ";
+                 firstActive = false;
+            }
+            mostActiveNama += currentPenulis->nama;
+        }
+        
+        currentPenulis = currentPenulis->next;
+    }
+
+    cout << "\n--- Penulis Paling Aktif ---\n";
+    if (maxBuku > 0) {
+        cout << "Penulis paling aktif (" << maxBuku << " buku) adalah: " << mostActiveNama << "\n";
+    } else {
+        cout << "Semua penulis tidak memiliki relasi buku atau belum menulis buku.\n";
+    }
+}
