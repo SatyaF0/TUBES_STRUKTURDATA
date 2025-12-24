@@ -1,5 +1,5 @@
-#ifndef MLL_H
-#define MLL_H
+#ifndef BUKU_H
+#define BUKU_H
 
 #include <iostream>
 #include <string>
@@ -64,7 +64,7 @@ void deletePenulisAndRelasi(PenulisList &LP, BukuList &LB, int idPenulis);
 void displayAllBukuWithPenulis(BukuList LB);
 void displayBukuByPenulis(PenulisList LP, int idPenulis);
 void displayPenulisByBuku(BukuList LB, int idBuku);
-
 void displayMostActivePenulis(PenulisList LP);
 
 #endif
+
