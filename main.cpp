@@ -28,87 +28,89 @@ void displaySubMenuSearch() {
     cout << "2. Tampilkan Buku Berdasarkan Penulis Tertentu\n";
     cout << "3. Tampilkan Penulis Berdasarkan Buku Tertentu\n";
     cout << "4. Tampilkan Penulis Paling Aktif\n";
+    cout << "5. Tampilkan Penulis Paling Tidak Aktif\n";
     cout << "0. Kembali ke Menu Utama\n";
     cout << "Pilih Opsi: ";
 }
 
 void handleAddPenulis(PenulisList &LP) {
-    int id, umur;
+    string id; 
+    int umur;
     string nama;
     
     cout << "\n--- Tambah Data Penulis ---\n";
-    cout << "ID Penulis (int): ";
-    if (!(cin >> id)) { clearInputBuffer(); cout << "Input ID tidak valid.\n"; return; }
+    cout << "ID Penulis : "; 
+    cin >> id;
     cin.ignore(); 
     cout << "Nama Penulis: ";
     getline(cin, nama);
-    cout << "Umur Penulis (int): ";
+    cout << "Umur Penulis : ";
     if (!(cin >> umur)) { clearInputBuffer(); cout << "Input Umur tidak valid.\n"; return; }
     
     insertFirstPenulis(LP, id, nama, umur);
 }
 
 void handleAddBuku(BukuList &LB) {
-    int id, tahun;
+    string id; 
+    int tahun;
     string judul;
     
     cout << "\n--- Tambah Data Buku ---\n";
-    cout << "ID Buku (int): ";
-    if (!(cin >> id)) { clearInputBuffer(); cout << "Input ID tidak valid.\n"; return; }
+    cout << "ID Buku : "; 
+    cin >> id;
     cin.ignore();
     cout << "Judul Buku: ";
     getline(cin, judul);
-    cout << "Tahun Terbit (int): ";
+    cout << "Tahun Terbit : ";
     if (!(cin >> tahun)) { clearInputBuffer(); cout << "Input Tahun tidak valid.\n"; return; }
     
     insertLastBuku(LB, id, judul, tahun);
 }
 
 void handleConnect(PenulisList &LP, BukuList &LB) {
-    int idPenulis, idBuku;
+    string idPenulis, idBuku; 
     
     cout << "\n--- Tentukan Relasi ---\n";
     cout << "Masukkan ID Penulis: ";
-    if (!(cin >> idPenulis)) { clearInputBuffer(); cout << "Input ID Penulis tidak valid.\n"; return; }
+    cin >> idPenulis;
     cout << "Masukkan ID Buku: ";
-    if (!(cin >> idBuku)) { clearInputBuffer(); cout << "Input ID Buku tidak valid.\n"; return; }
+    cin >> idBuku;
     
     connect(LP, LB, idPenulis, idBuku);
 }
 
 void handleDeletePenulis(PenulisList &LP, BukuList &LB) {
-    int id;
+    string id; 
     cout << "\n--- Hapus Data Penulis ---\n";
     cout << "Masukkan ID Penulis yang akan dihapus: ";
-    if (!(cin >> id)) { clearInputBuffer(); cout << "Input ID tidak valid.\n"; return; }
+    cin >> id;
     
     deletePenulisAndRelasi(LP, LB, id);
 }
 
 void handleDeleteBuku(BukuList &LB, PenulisList &LP) {
-    int id;
+    string id; 
     cout << "\n--- Hapus Data Buku ---\n";
     cout << "Masukkan ID Buku yang akan dihapus: ";
-    if (!(cin >> id)) { clearInputBuffer(); cout << "Input ID tidak valid.\n"; return; }
+    cin >> id;
     
     deleteBukuAndRelasi(LB, LP, id);
 }
 
-
 void handleDisplayBukuByPenulis(PenulisList &LP) {
-    int id;
+    string id; 
     cout << "\n--- Tampilkan Buku Berdasarkan Penulis ---\n";
     cout << "Masukkan ID Penulis: ";
-    if (!(cin >> id)) { clearInputBuffer(); cout << "Input ID tidak valid.\n"; return; }
+    cin >> id;
     
     displayBukuByPenulis(LP, id);
 }
 
 void handleDisplayPenulisByBuku(BukuList &LB) {
-    int id;
+    string id; 
     cout << "\n--- Tampilkan Penulis Berdasarkan Buku ---\n";
     cout << "Masukkan ID Buku: ";
-    if (!(cin >> id)) { clearInputBuffer(); cout << "Input ID tidak valid.\n"; return; }
+    cin >> id;
     
     displayPenulisByBuku(LB, id);
 }
@@ -116,35 +118,21 @@ void handleDisplayPenulisByBuku(BukuList &LB) {
 void handleSearchMenu(PenulisList &LP, BukuList &LB) {
     int subChoice;
     bool subRunning = true;
-    
     while (subRunning) {
         displaySubMenuSearch();
-        
         if (!(cin >> subChoice)) {
             clearInputBuffer();
             cout << "Input tidak valid. Silakan masukkan angka dari sub-menu.\n";
             continue;
         }
-
         switch (subChoice) {
-            case 1:
-                displayAllBukuWithPenulis(LB);
-                break;
-            case 2:
-                handleDisplayBukuByPenulis(LP);
-                break;
-            case 3:
-                handleDisplayPenulisByBuku(LB);
-                break;
-            case 4:
-                displayMostActivePenulis(LP);
-                break;
-            case 0:
-                subRunning = false;
-                break;
-            default:
-                cout << "Opsi sub-menu tidak valid. Silakan coba lagi.\n";
-                break;
+            case 1: displayAllBukuWithPenulis(LB); break;
+            case 2: handleDisplayBukuByPenulis(LP); break;
+            case 3: handleDisplayPenulisByBuku(LB); break;
+            case 4: displayMostActivePenulis(LP); break;
+            case 5: displayLeastActivePenulis(LP); break;
+            case 0: subRunning = false; break;
+            default: cout << "Opsi sub-menu tidak valid.\n"; break;
         }
     }
 }
@@ -154,51 +142,28 @@ int main() {
     BukuList listBuku;
     initList(listPenulis);
     initList(listBuku);
-
     int choice;
     bool running = true;
-
     cout << "=========================================\n";
     cout << "  SELAMAT DATANG DI SISTEM MANAJEMEN BUKU  \n";
     cout << "=========================================\n";
-
     while (running) {
         displayMenu();
         if (!(cin >> choice)) {
             clearInputBuffer();
-            cout << "Input tidak valid. Silakan masukkan angka dari menu.\n";
+            cout << "Input tidak valid.\n";
             continue;
         }
-
         switch (choice) {
-            case 1:
-                handleAddPenulis(listPenulis);
-                break;
-            case 2:
-                handleAddBuku(listBuku);
-                break;
-            case 3:
-                handleConnect(listPenulis, listBuku);
-                break;
-            case 4:
-                handleDeletePenulis(listPenulis, listBuku);
-                break;
-            case 5:
-                handleDeleteBuku(listBuku, listPenulis);
-                break;
-            case 6:
-                handleSearchMenu(listPenulis, listBuku);
-                break;
-            case 0:
-                running = false;
-                cout << "Terima kasih telah menggunakan sistem manajemen buku.\n";
-                break;
-            default:
-                cout << "Opsi tidak valid. Silakan coba lagi.\n";
-                break;
+            case 1: handleAddPenulis(listPenulis); break;
+            case 2: handleAddBuku(listBuku); break;
+            case 3: handleConnect(listPenulis, listBuku); break;
+            case 4: handleDeletePenulis(listPenulis, listBuku); break;
+            case 5: handleDeleteBuku(listBuku, listPenulis); break;
+            case 6: handleSearchMenu(listPenulis, listBuku); break;
+            case 0: running = false; cout << "Terima kasih.\n"; break;
+            default: cout << "Opsi tidak valid.\n"; break;
         }
     }
-
     return 0;
 }
-
