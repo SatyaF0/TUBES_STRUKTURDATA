@@ -1,109 +1,142 @@
 #include "buku.h"
 
-void initList(PenulisList &L) { L.first = nullptr; L.last = nullptr; }
-void initList(BukuList &L) { L.first = nullptr; L.last = nullptr; }
+void initList(PenulisList &L) {
+    L.first = L.last = nullptr;
+}
+
+void initList(BukuList &L) {
+    L.first = L.last = nullptr;
+}
 
 void insertFirstPenulis(PenulisList &L, string id, string nama, int umur) {
-    PenulisNode* newNode = new PenulisNode{id, nama, umur, L.first, nullptr};
-    L.first = newNode;
-    if (L.last == nullptr) L.last = newNode;
-    cout << "Penulis " << nama << " (ID: " << id << ") berhasil ditambahkan.\n";
+    PenulisNode* p = new PenulisNode{id, nama, umur, L.first, nullptr};
+    L.first = p;
+    if (!L.last) L.last = p;
 }
 
 void insertLastBuku(BukuList &L, string id, string judul, int tahun) {
-    BukuNode* newNode = new BukuNode{id, judul, tahun, L.last, nullptr, nullptr};
-    if (L.first == nullptr) L.first = newNode;
-    else L.last->next = newNode;
-    L.last = newNode;
-    cout << "Buku " << judul << " (ID: " << id << ") berhasil ditambahkan.\n";
+    BukuNode* b = new BukuNode{id, judul, tahun, L.last, nullptr};
+    if (!L.first) L.first = b;
+    else L.last->next = b;
+    L.last = b;
 }
 
 PenulisNode* findPenulis(PenulisList L, string id) {
-    PenulisNode* current = L.first;
-    while (current != nullptr && current->idPenulis != id) current = current->next;
-    return current;
+    PenulisNode* p = L.first;
+    while (p && p->idPenulis != id) p = p->next;
+    return p;
 }
 
 BukuNode* findBuku(BukuList L, string id) {
-    BukuNode* current = L.first;
-    while (current != nullptr && current->idBuku != id) current = current->next;
-    return current;
+    BukuNode* b = L.first;
+    while (b && b->idBuku != id) b = b->next;
+    return b;
 }
 
 void connect(PenulisList &LP, BukuList &LB, string idPenulis, string idBuku) {
     PenulisNode* p = findPenulis(LP, idPenulis);
     BukuNode* b = findBuku(LB, idBuku);
-    if (!p || !b) { cout << "Error: ID tidak ditemukan.\n"; return; }
+    if (!p || !b) return;
 
-    RelasiNode* r = new RelasiNode{p, b, p->firstRelasi, b->firstRelasi};
+    RelasiNode* r = new RelasiNode{b, p->firstRelasi};
     p->firstRelasi = r;
-    b->firstRelasi = r;
-    cout << "Relasi " << p->nama << " -> " << b->judul << " berhasil.\n";
+}
+
+void deletePenulisAndRelasi(PenulisList &LP, string idPenulis) {
+    PenulisNode* p = LP.first;
+    PenulisNode* prev = nullptr;
+
+    while (p && p->idPenulis != idPenulis) {
+        prev = p;
+        p = p->next;
+    }
+    if (!p) return;
+
+    RelasiNode* r = p->firstRelasi;
+    while (r) {
+        RelasiNode* del = r;
+        r = r->next;
+        delete del;
+    }
+
+    if (!prev) LP.first = p->next;
+    else prev->next = p->next;
+    if (LP.last == p) LP.last = prev;
+
+    delete p;
 }
 
 void deleteBukuAndRelasi(BukuList &LB, PenulisList &LP, string idBuku) {
     BukuNode* b = findBuku(LB, idBuku);
     if (!b) return;
 
-    RelasiNode* r = b->firstRelasi;
-    while (r != nullptr) {
-        RelasiNode* nextR = r->nextRelasiBuku;
-        PenulisNode* p = r->nextPenulis;
-        
-        if (p->firstRelasi == r) p->firstRelasi = r->nextRelasiPenulis;
-        else {
-            RelasiNode* prev = p->firstRelasi;
-            while (prev->nextRelasiPenulis != r) prev = prev->nextRelasiPenulis;
-            prev->nextRelasiPenulis = r->nextRelasiPenulis;
+    PenulisNode* p = LP.first;
+    while (p) {
+        RelasiNode* r = p->firstRelasi;
+        RelasiNode* prev = nullptr;
+        while (r) {
+            if (r->buku == b) {
+                if (!prev) p->firstRelasi = r->next;
+                else prev->next = r->next;
+                delete r;
+                r = (prev ? prev->next : p->firstRelasi);
+            } else {
+                prev = r;
+                r = r->next;
+            }
         }
-        delete r;
-        r = nextR;
+        p = p->next;
     }
 
-    if (b->prev) b->prev->next = b->next; else LB.first = b->next;
-    if (b->next) b->next->prev = b->prev; else LB.last = b->prev;
+    if (b->prev) b->prev->next = b->next;
+    else LB.first = b->next;
+    if (b->next) b->next->prev = b->prev;
+    else LB.last = b->prev;
+
     delete b;
-    cout << "Buku dihapus.\n";
 }
 
-void deletePenulisAndRelasi(PenulisList &LP, BukuList &LB, string idPenulis) {
+void displayBukuByPenulis(PenulisList LP, string idPenulis) {
     PenulisNode* p = findPenulis(LP, idPenulis);
     if (!p) return;
 
     RelasiNode* r = p->firstRelasi;
-    while (r != nullptr) {
-        RelasiNode* nextR = r->nextRelasiPenulis;
-        BukuNode* b = r->nextBuku;
-
-        if (b->firstRelasi == r) b->firstRelasi = r->nextRelasiBuku;
-        else {
-            RelasiNode* prev = b->firstRelasi;
-            while (prev->nextRelasiBuku != r) prev = prev->nextRelasiBuku;
-            prev->nextRelasiBuku = r->nextRelasiBuku;
-        }
-        delete r;
-        r = nextR;
+    while (r) {
+        cout << "- " << r->buku->judul << endl;
+        r = r->next;
     }
-
-    if (LP.first == p) LP.first = p->next;
-    else {
-        PenulisNode* prevP = LP.first;
-        while (prevP->next != p) prevP = prevP->next;
-        prevP->next = p->next;
-        if (LP.last == p) LP.last = prevP;
-    }
-    delete p;
-    cout << "Penulis dihapus.\n";
 }
 
-void displayAllBukuWithPenulis(BukuList LB) {
+void displayPenulisByBuku(PenulisList LP, string idBuku) {
+    PenulisNode* p = LP.first;
+    while (p) {
+        RelasiNode* r = p->firstRelasi;
+        while (r) {
+            if (r->buku->idBuku == idBuku)
+                cout << "- " << p->nama << endl;
+            r = r->next;
+        }
+        p = p->next;
+    }
+}
+
+void displayAllBukuWithPenulis(BukuList LB, PenulisList LP) {
     BukuNode* b = LB.first;
     while (b) {
-        cout << b->judul << " (ID:" << b->idBuku << ") | Penulis: ";
-        RelasiNode* r = b->firstRelasi;
-        while (r) {
-            cout << r->nextPenulis->nama << (r->nextRelasiBuku ? ", " : "");
-            r = r->nextRelasiBuku;
+        cout << b->judul << " | Penulis: ";
+        bool ada = false;
+        PenulisNode* p = LP.first;
+        while (p) {
+            RelasiNode* r = p->firstRelasi;
+            while (r) {
+                if (r->buku == b) {
+                    if (ada) cout << ", ";
+                    cout << p->nama;
+                    ada = true;
+                }
+                r = r->next;
+            }
+            p = p->next;
         }
         cout << endl;
         b = b->next;
@@ -112,53 +145,39 @@ void displayAllBukuWithPenulis(BukuList LB) {
 
 void displayMostActivePenulis(PenulisList LP) {
     int maxB = 0;
-    PenulisNode* curr = LP.first;
-    while (curr) {
-        int c = 0; RelasiNode* r = curr->firstRelasi;
-        while (r) { c++; r = r->nextRelasiPenulis; }
+    for (PenulisNode* p = LP.first; p; p = p->next) {
+        int c = 0;
+        for (RelasiNode* r = p->firstRelasi; r; r = r->next) c++;
         if (c > maxB) maxB = c;
-        curr = curr->next;
     }
-    cout << "\n--- Paling Aktif (" << maxB << " Buku) ---\n";
-    curr = LP.first;
-    while (curr) {
-        int c = 0; RelasiNode* r = curr->firstRelasi;
-        while (r) { c++; r = r->nextRelasiPenulis; }
-        if (c == maxB && maxB > 0) cout << "- " << curr->nama << endl;
-        curr = curr->next;
+
+    cout << "\n--- PENULIS PALING AKTIF ---\n";
+    for (PenulisNode* p = LP.first; p; p = p->next) {
+        int c = 0;
+        for (RelasiNode* r = p->firstRelasi; r; r = r->next) c++;
+        if (c == maxB && maxB > 0) {
+            cout << "- " << p->nama << " (" << c << " buku)\n";
+        }
     }
 }
+
 
 void displayLeastActivePenulis(PenulisList LP) {
     if (!LP.first) return;
+
     int minB = -1;
-    PenulisNode* curr = LP.first;
-    while (curr) {
-        int c = 0; RelasiNode* r = curr->firstRelasi;
-        while (r) { c++; r = r->nextRelasiPenulis; }
+    for (PenulisNode* p = LP.first; p; p = p->next) {
+        int c = 0;
+        for (RelasiNode* r = p->firstRelasi; r; r = r->next) c++;
         if (minB == -1 || c < minB) minB = c;
-        curr = curr->next;
     }
-    cout << "\n--- Paling Tidak Aktif (" << minB << " Buku) ---\n";
-    curr = LP.first;
-    while (curr) {
-        int c = 0; RelasiNode* r = curr->firstRelasi;
-        while (r) { c++; r = r->nextRelasiPenulis; }
-        if (c == minB) cout << "- " << curr->nama << endl;
-        curr = curr->next;
+
+    cout << "\n--- PENULIS PALING TIDAK AKTIF ---\n";
+    for (PenulisNode* p = LP.first; p; p = p->next) {
+        int c = 0;
+        for (RelasiNode* r = p->firstRelasi; r; r = r->next) c++;
+        if (c == minB) {
+            cout << "- " << p->nama << " (" << c << " buku)\n";
+        }
     }
-}
-
-void displayBukuByPenulis(PenulisList LP, string idPenulis) {
-    PenulisNode* p = findPenulis(LP, idPenulis);
-    if (!p) return;
-    RelasiNode* r = p->firstRelasi;
-    while (r) { cout << "- " << r->nextBuku->judul << endl; r = r->nextRelasiPenulis; }
-}
-
-void displayPenulisByBuku(BukuList LB, string idBuku) {
-    BukuNode* b = findBuku(LB, idBuku);
-    if (!b) return;
-    RelasiNode* r = b->firstRelasi;
-    while (r) { cout << "- " << r->nextPenulis->nama << endl; r = r->nextRelasiBuku; }
 }
