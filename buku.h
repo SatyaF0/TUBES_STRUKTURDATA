@@ -3,34 +3,29 @@
 
 #include <iostream>
 #include <string>
-
 using namespace std;
 
-struct PenulisNode;
 struct BukuNode;
 
 struct RelasiNode {
-    PenulisNode* nextPenulis; 
-    BukuNode* nextBuku;      
-    RelasiNode* nextRelasiPenulis;
-    RelasiNode* nextRelasiBuku; 
-};
-
-struct BukuNode {
-    string idBuku; 
-    string judul;
-    int tahunTerbit; 
-    BukuNode* prev; 
-    BukuNode* next;
-    RelasiNode* firstRelasi; 
+    BukuNode* buku;
+    RelasiNode* next;
 };
 
 struct PenulisNode {
-    string idPenulis; 
+    string idPenulis;
     string nama;
     int umur;
-    PenulisNode* next; 
-    RelasiNode* firstRelasi; 
+    PenulisNode* next;
+    RelasiNode* firstRelasi;
+};
+
+struct BukuNode {
+    string idBuku;
+    string judul;
+    int tahunTerbit;
+    BukuNode* prev;
+    BukuNode* next;
 };
 
 struct PenulisList {
@@ -45,6 +40,7 @@ struct BukuList {
 
 void initList(PenulisList &L);
 void initList(BukuList &L);
+
 void insertFirstPenulis(PenulisList &L, string id, string nama, int umur);
 void insertLastBuku(BukuList &L, string id, string judul, int tahun);
 
@@ -53,14 +49,14 @@ BukuNode* findBuku(BukuList L, string id);
 
 void connect(PenulisList &LP, BukuList &LB, string idPenulis, string idBuku);
 
+void deletePenulisAndRelasi(PenulisList &LP, string idPenulis);
 void deleteBukuAndRelasi(BukuList &LB, PenulisList &LP, string idBuku);
-void deletePenulisAndRelasi(PenulisList &LP, BukuList &LB, string idPenulis);
 
-void displayAllBukuWithPenulis(BukuList LB);
+void displayAllBukuWithPenulis(BukuList LB, PenulisList LP);
 void displayBukuByPenulis(PenulisList LP, string idPenulis);
-void displayPenulisByBuku(BukuList LB, string idBuku);
+void displayPenulisByBuku(PenulisList LP, string idBuku);
 
 void displayMostActivePenulis(PenulisList LP);
-void displayLeastActivePenulis(PenulisList LP); 
+void displayLeastActivePenulis(PenulisList LP);
 
 #endif
